@@ -43,7 +43,7 @@ export function Home() {
   });
 
   useEffect(() => {
-    if(activeCycle) {
+    if (activeCycle) {
       setInterval(() => {
         setPassedSecondsAmount(
           differenceInSeconds(new Date(), activeCycle.startDate)
