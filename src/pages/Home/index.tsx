@@ -43,24 +43,32 @@ export function Home() {
   });
 
   useEffect(() => {
+    let interval: number
     if (activeCycle) {
-      setInterval(() => {
+      interval = setInterval(() => {
         setPassedSecondsAmount(
           differenceInSeconds(new Date(), activeCycle.startDate)
         );
       }, 1000);
     }
+
+    return () => {
+      clearInterval(interval)
+    }
   }, []);
 
   function handleCreateNewCycle(data: NewCycleFormData) {
+    const id = String(new Date().getTime())
     const newCycle: Cycle = {
-      id: String(new Date().getTime()),
+      id,
       task: data.task,
       minutesAmount: data.minutesAmount,
       startDate: new Date()
     };
 
     setCycles(state => [...state, newCycle]);
+    setActiveCycleId(id)
+    setPassedSecondsAmount(0)
 
     reset();
   };
@@ -75,6 +83,12 @@ export function Home() {
 
   const minutes = String(minutesAmount).padStart(2, '0');
   const seconds = String(secondsAmount).padStart(2, '0');
+
+  useEffect(() => {
+    if (activeCycle) {
+      document.title = `${minutes}: ${seconds}`
+    }
+  }, [])
 
   const task = watch('task');
   const isButtonDisabled = !task;
