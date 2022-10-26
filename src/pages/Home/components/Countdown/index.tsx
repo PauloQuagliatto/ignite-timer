@@ -1,10 +1,51 @@
+import { useContext, useEffect, useState } from "react";
+import { differenceInSeconds } from "date-fns";
+
+import { CyclesContext } from "../../../../contexts/CyclesContext";
+
 import {
   CountDownContainer,
-  Separator,
-  StartCountDownButton,
-  StopCountDownButton
+  Separator
 } from "./styles";
+
 export function Countdown() {
+  const { activeCycle, activeCycleId, finishCycle, passedSecondsAmount, setSeconds } = useContext(CyclesContext);
+
+  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
+
+  useEffect(() => {
+    let interval: number
+    if (activeCycle) {
+      interval = setInterval(() => {
+        const secondsDifference = differenceInSeconds(new Date(), activeCycle.startDate);
+
+        if (secondsDifference >= totalSeconds) {
+          finishCycle();
+        } else {
+          setSeconds(secondsDifference);
+        }
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [activeCycle, totalSeconds, activeCycleId, finishCycle, setSeconds]);
+
+  const currentSeconds = activeCycle ? totalSeconds - passedSecondsAmount : 0;
+
+  const minutesAmount = Math.floor(currentSeconds / 60);
+  const secondsAmount = currentSeconds % 60;
+
+  const minutes = String(minutesAmount).padStart(2, '0');
+  const seconds = String(secondsAmount).padStart(2, '0');
+
+  useEffect(() => {
+    if (activeCycle) {
+      document.title = `${minutes}:${seconds}`
+    }
+  }, []);
+
   return (
     <CountDownContainer>
       <span>{minutes[0]}</span>
@@ -13,17 +54,5 @@ export function Countdown() {
       <span>{seconds[0]}</span>
       <span>{seconds[1]}</span>
     </CountDownContainer>
-      {
-    activeCycle ?
-      <StopCountDownButton type="button" onClick={() => handleInterruptCycle()}>
-        <HandPalm size={24} />
-        Interromper
-      </StopCountDownButton>
-      :
-      <StartCountDownButton disabled={isButtonDisabled} type="submit">
-        <Play size={24} />
-        Começar
-      </StartCountDownButton>
-  }
   );
 };
