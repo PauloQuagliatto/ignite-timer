@@ -32,7 +32,7 @@ export function Home() {
     resolver: zodResolver(newCycleValidationSchema),
     defaultValues: {
       task: '',
-      minutesAmount: 5
+      minutesAmount: 0
     }
   });
 

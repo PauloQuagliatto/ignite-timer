@@ -24,14 +24,16 @@ export function NewCycleForm() {
 
       <label htmlFor="minutesAmount">durante</label>
       <MinutesAmountInput
+        type="number"
         id="minutesAmount"
         placeholder="00"
-        type="number"
         step={5}
         min={5}
         max={60}
         disabled={!!activeCycle}
-        {...register('minutesAmount')}
+        {...register('minutesAmount',
+          { valueAsNumber: true }
+        )}
       />
       <span>minutos.</span>
     </FormContainer>
